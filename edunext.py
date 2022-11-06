@@ -19,12 +19,15 @@ try:
 except:
     driver = webdriver.Chrome(executable_path="chromedriver.exe")
 driver.get("https://fu.edunext.vn/")
+wait = WebDriverWait(driver, 30)
 
 
-loginbtn = driver.find_element(By.CSS_SELECTOR,".btn-login-v4")
+loginbtn = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR,".btn-login-v4")))
 loginbtn.click()
-loginOauth = driver.find_element(By.CSS_SELECTOR,".btn-social-login")
+
+loginOauth = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR,".btn-social-login")))
 loginOauth.click()
+
 time.sleep(2)
 googleLogin = None
 googleLogin = False if driver.current_url == "https://fu.edunext.vn/en/home" else True
@@ -38,11 +41,11 @@ if googleLogin:
     time.sleep(5)
 
 
-listCourse = driver.find_element(By.XPATH,"//div[@class='list-course row']")
-courses = listCourse.find_elements(By.TAG_NAME,'a')
+listCourse = wait.until(EC.presence_of_all_elements_located((By.XPATH,"//div[@class='list-course row']//a")))
+# courses = listCourse.find_elements(By.TAG_NAME,'a')
 
 coursesText = []
-for e in courses:
+for e in listCourse:
     title = e.get_attribute('title')
     if not title.startswith("Go to course"):
         coursesText.append(title)
@@ -64,26 +67,29 @@ if (i>=len(coursesText)) or i<0:
     driver.quit()
     exit()
     
-courses[i*2].click()
+listCourse[i*2].click()
 time.sleep(2)
-all_item = driver.find_elements(By.XPATH,"//ul[@class='list-slots none-list mg-0']/li[@class='slot-item']/ul[@class='list-activities none-list']/li[contains(@class,'activity-item')]//a[@class='mg-b-0 text-normal activity-name text-decoration-none']")
-
+# all_item = driver.find_elements(By.XPATH,"//ul[@class='list-slots none-list mg-0']/li[@class='slot-item']/ul[@class='list-activities none-list']/li[contains(@class,'activity-item')]//a[@class='mg-b-0 text-normal activity-name text-decoration-none']")
+all_item = wait.until(EC.presence_of_all_elements_located((By.XPATH,"//ul[@class='list-slots none-list mg-0']/li[@class='slot-item']/ul[@class='list-activities none-list']/li[contains(@class,'activity-item')]//a[@class='mg-b-0 text-normal activity-name text-decoration-none']")))
 def gradeStarInsideGroup(question):
     url = question.get_attribute('href')
     d2 = driver.execute_script(f'window.open("{url}","_blank");')
     driver.switch_to.window(driver.window_handles[1])
-    time.sleep(5)
     try:
-        driver.find_element(By.CSS_SELECTOR,"#get-evaluate-inside-group").click()
-        time.sleep(3)
-        groupMem = driver.find_elements(By.XPATH,"//div[@class='wrap-table']//tbody/tr")
+        # driver.find_element(By.CSS_SELECTOR,"#get-evaluate-inside-group").click()
+        gradebtn = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR,"#get-evaluate-inside-group")))
+        gradebtn.click()
+        # groupMem = driver.find_elements(By.XPATH,"//div[@class='wrap-table']//tbody/tr")
+        groupMem = wait.until(EC.presence_of_all_elements_located((By.XPATH,"//div[@class='wrap-table']//tbody/tr")))
         stars1 = groupMem[0].find_elements(By.XPATH,"//i[@data-point='1']")
         for star in stars1:
             star.click()
         stars5 = groupMem[0].find_elements(By.XPATH,"//i[@data-point='5']")
         for star in stars5:
             star.click()
-        driver.find_element(By.CSS_SELECTOR,'#btn-evaluate-inside-group').click()
+        # submitbtn = driver.find_element(By.CSS_SELECTOR,'#btn-evaluate-inside-group').click()
+        submitbtn = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR,'#btn-evaluate-inside-group')))
+        submitbtn.click()
     except:
         print("Lỗi, Mạng load không kịp, Vui lòng tự Grade lại tại:",driver.current_url)
     time.sleep(1)
