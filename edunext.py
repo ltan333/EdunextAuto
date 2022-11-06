@@ -6,15 +6,18 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from PIL import Image
 from selenium import webdriver
-CHROMEDRIVER_PATH = 'chromedriver.exe'
 WINDOW_SIZE = "1920,1080"
 
-mail_address = "anltce150602@fpt.edu.vn"
-password="password"
+# mail_address = "anltce150602@fpt.edu.vn"
+mail_address = input("Nhập Email @fpt: ")
+password= input("Nhập Pass: ")
 
 options = Options()
 options.add_argument(r"--user-data-dir=C:\Users\Username\AppData\Local\Google\Chrome\User Data")
-driver = webdriver.Chrome(executable_path="chromedriver.exe", chrome_options=options)
+try:
+    driver = webdriver.Chrome(executable_path="chromedriver.exe", chrome_options=options)
+except:
+    driver = webdriver.Chrome(executable_path="chromedriver.exe")
 driver.get("https://fu.edunext.vn/")
 
 
@@ -29,12 +32,10 @@ googleLogin = False if driver.current_url == "https://fu.edunext.vn/en/home" els
 if googleLogin:
     driver.find_element(By.CSS_SELECTOR,"#identifierId").send_keys(mail_address)
     driver.find_element(By.CSS_SELECTOR,".VfPpkd-LgbsSe-OWXEXe-k8QpJ").click()
-    time.sleep(2)
+    time.sleep(5)
     driver.find_element(By.CSS_SELECTOR,".zHQkBf").send_keys(password)
     driver.find_element(By.XPATH,"//button[@class='VfPpkd-LgbsSe VfPpkd-LgbsSe-OWXEXe-k8QpJ VfPpkd-LgbsSe-OWXEXe-dgl2Hf nCP5yc AjY5Oe DuMIQc LQeN7 qIypjc TrZEUc lw1w4b']").click()
-    time.sleep(3)
-
-
+    time.sleep(5)
 
 
 listCourse = driver.find_element(By.XPATH,"//div[@class='list-course row']")
